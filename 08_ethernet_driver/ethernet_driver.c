@@ -3,9 +3,7 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 
-/* ------------------------------------------------ */
-/* Open (ifconfig up / ip link set up)               */
-/* ------------------------------------------------ */
+
 static int eth_open(struct net_device *dev)
 {
     netif_start_queue(dev);
@@ -13,9 +11,6 @@ static int eth_open(struct net_device *dev)
     return 0;
 }
 
-/* ------------------------------------------------ */
-/* Stop (ifconfig down / ip link set down)           */
-/* ------------------------------------------------ */
 static int eth_stop(struct net_device *dev)
 {
     netif_stop_queue(dev);
@@ -23,9 +18,6 @@ static int eth_stop(struct net_device *dev)
     return 0;
 }
 
-/* ------------------------------------------------ */
-/* Transmit packet                                   */
-/* ------------------------------------------------ */
 static netdev_tx_t eth_xmit(struct sk_buff *skb,
                             struct net_device *dev)
 {
@@ -39,18 +31,14 @@ static netdev_tx_t eth_xmit(struct sk_buff *skb,
     return NETDEV_TX_OK;
 }
 
-/* ------------------------------------------------ */
-/* Network device operations                         */
-/* ------------------------------------------------ */
+
 static const struct net_device_ops eth_netdev_ops = {
     .ndo_open       = eth_open,
     .ndo_stop       = eth_stop,
     .ndo_start_xmit = eth_xmit,
 };
 
-/* ------------------------------------------------ */
-/* Setup function                                    */
-/* ------------------------------------------------ */
+
 static void eth_setup(struct net_device *dev)
 {
     ether_setup(dev);
@@ -60,9 +48,6 @@ static void eth_setup(struct net_device *dev)
     eth_hw_addr_random(dev);
 }
 
-/* ------------------------------------------------ */
-/* Module init / exit                                */
-/* ------------------------------------------------ */
 static struct net_device *eth_dev;
 
 static int __init eth_init(void)

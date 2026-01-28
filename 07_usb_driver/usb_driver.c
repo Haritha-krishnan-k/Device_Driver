@@ -17,18 +17,13 @@ struct usb_temp_dev {
     unsigned char bulk_out_ep;
 };
 
-/* ------------------------------------------------ */
-/* USB device ID table                              */
-/* ------------------------------------------------ */
 static const struct usb_device_id temp_table[] = {
     { USB_DEVICE(USB_TEMP_VENDOR_ID, USB_TEMP_PRODUCT_ID) },
     {}
 };
 MODULE_DEVICE_TABLE(usb, temp_table);
 
-/* ------------------------------------------------ */
-/* Read temperature from device                     */
-/* ------------------------------------------------ */
+
 static int read_temperature(struct usb_temp_dev *dev)
 {
     int retval;
@@ -55,9 +50,6 @@ static int read_temperature(struct usb_temp_dev *dev)
     return 0;
 }
 
-/* ------------------------------------------------ */
-/* Probe: called when device is plugged in           */
-/* ------------------------------------------------ */
 static int temp_probe(struct usb_interface *interface,
                       const struct usb_device_id *id)
 {
@@ -98,9 +90,6 @@ static int temp_probe(struct usb_interface *interface,
     return 0;
 }
 
-/* ------------------------------------------------ */
-/* Disconnect: called when device is unplugged       */
-/* ------------------------------------------------ */
 static void temp_disconnect(struct usb_interface *interface)
 {
     struct usb_temp_dev *dev;
@@ -117,9 +106,6 @@ static void temp_disconnect(struct usb_interface *interface)
             DRIVER_NAME);
 }
 
-/* ------------------------------------------------ */
-/* USB driver structure                             */
-/* ------------------------------------------------ */
 static struct usb_driver temp_usb_driver = {
     .name       = DRIVER_NAME,
     .probe      = temp_probe,
@@ -127,9 +113,7 @@ static struct usb_driver temp_usb_driver = {
     .id_table   = temp_table,
 };
 
-/* ------------------------------------------------ */
-/* Module init / exit                               */
-/* ------------------------------------------------ */
+
 static int __init temp_init(void)
 {
     pr_info("[%s] USB Temperature Driver loaded\n",

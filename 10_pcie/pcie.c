@@ -10,13 +10,11 @@
 
 #define DRIVER_NAME "pcie_dma"
 #define DEVICE_NAME "pcie_dma"
-#define DMA_BUF_SIZE (4 * 1024 * 1024) /* 4MB */
+#define DMA_BUF_SIZE (4 * 1024 * 1024) 
 
-/* Fake PCI IDs */
 #define PCI_VENDOR_ID_FAKE 0x1234
 #define PCI_DEVICE_ID_FAKE 0x5678
 
-/* BAR0 register offsets */
 #define REG_DMA_ADDR   0x00
 #define REG_DMA_LEN    0x08
 #define REG_DMA_START  0x10
@@ -35,9 +33,7 @@ struct pcie_dma_dev {
 static struct class *dma_class;
 static struct pcie_dma_dev *dma_dev;
 
-/* -------------------------------------------------- */
-/* Interrupt Handler                                  */
-/* -------------------------------------------------- */
+
 static irqreturn_t dma_irq_handler(int irq, void *dev_id)
 {
     struct pcie_dma_dev *dev = dev_id;
@@ -49,9 +45,7 @@ static irqreturn_t dma_irq_handler(int irq, void *dev_id)
     return IRQ_HANDLED;
 }
 
-/* -------------------------------------------------- */
-/* mmap(): map DMA buffer to user space               */
-/* -------------------------------------------------- */
+
 static int dma_mmap(struct file *file, struct vm_area_struct *vma)
 {
     unsigned long size = vma->vm_end - vma->vm_start;
@@ -73,9 +67,6 @@ static const struct file_operations dma_fops = {
     .mmap  = dma_mmap,
 };
 
-/* -------------------------------------------------- */
-/* PCI Probe                                          */
-/* -------------------------------------------------- */
 static int dma_probe(struct pci_dev *pdev,
                      const struct pci_device_id *id)
 {
@@ -143,9 +134,7 @@ err_free:
     return ret;
 }
 
-/* -------------------------------------------------- */
-/* PCI Remove                                         */
-/* -------------------------------------------------- */
+
 static void dma_remove(struct pci_dev *pdev)
 {
     device_destroy(dma_class, dma_dev->devt);
@@ -166,9 +155,7 @@ static void dma_remove(struct pci_dev *pdev)
     pr_info("[%s] Device removed\n", DRIVER_NAME);
 }
 
-/* -------------------------------------------------- */
-/* PCI ID Table                                       */
-/* -------------------------------------------------- */
+
 static const struct pci_device_id dma_ids[] = {
     { PCI_DEVICE(PCI_VENDOR_ID_FAKE, PCI_DEVICE_ID_FAKE) },
     { }

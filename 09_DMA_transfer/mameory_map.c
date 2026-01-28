@@ -15,13 +15,9 @@ static dev_t dev_num;
 static struct cdev daq_cdev;
 static struct class *daq_class;
 
-/* DMA buffer */
 static void *dma_virt;
 static dma_addr_t dma_phys;
 
-/* ------------------------------------------------ */
-/* File operations                                  */
-/* ------------------------------------------------ */
 
 static int daq_open(struct inode *inode, struct file *file)
 {
@@ -59,17 +55,13 @@ static struct file_operations daq_fops = {
     .mmap    = daq_mmap,
 };
 
-/* ------------------------------------------------ */
-/* Module init / exit                               */
-/* ------------------------------------------------ */
-
 static int __init daq_init(void)
 {
     int ret;
 
     pr_info("%s: initializing\n", DRIVER_NAME);
 
-    /* Allocate char device number */
+
     ret = alloc_chrdev_region(&dev_num, 0, 1, DEVICE_NAME);
     if (ret)
         return ret;
@@ -82,7 +74,7 @@ static int __init daq_init(void)
     daq_class = class_create(THIS_MODULE, DEVICE_NAME);
     device_create(daq_class, NULL, dev_num, NULL, DEVICE_NAME "0");
 
-    /* Allocate DMA buffer */
+
     dma_virt = dma_alloc_coherent(NULL,
                                   DMA_BUF_SIZE,
                                   &dma_phys,
