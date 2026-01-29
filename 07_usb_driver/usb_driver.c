@@ -30,7 +30,7 @@ static int read_temperature(struct usb_temp_dev *dev)
     unsigned char data[2];
     int actual_length;
     int temperature;
-
+// pointer to usb device , creates a IN pipe to read data from bulk endpoint , destination buffer , no.of bytes to read  , actually read , timeout
     retval = usb_bulk_msg(dev->udev,
                           usb_rcvbulkpipe(dev->udev, dev->bulk_in_ep),
                           data,
@@ -42,7 +42,7 @@ static int read_temperature(struct usb_temp_dev *dev)
         pr_err("[%s] Failed to read temperature\n", DRIVER_NAME);
         return retval;
     }
-
+    //assume that the temp is stored in the first byte
     temperature = data[0]; /* Simple 1-byte temperature */
     pr_info("[%s] Current Temperature: %d C\n",
             DRIVER_NAME, temperature);
@@ -60,6 +60,12 @@ static int temp_probe(struct usb_interface *interface,
 
     pr_info("[%s] USB Temperature Sensor connected\n",
             DRIVER_NAME);
+
+//  Allocates a structure (usb_temp_dev) to store info about the device.
+// Stores a reference to the usb device and interface.
+// Loops over the device’s endpoints to find bulk IN and OUT endpoints (used to read/write data).
+// Saves this driver data so other USB callbacks can access it.
+// Calls read_temperature() once to read and print the current temperature.
 
     dev = kzalloc(sizeof(*dev), GFP_KERNEL);
     if (!dev)
@@ -85,7 +91,7 @@ static int temp_probe(struct usb_interface *interface,
     usb_set_intfdata(interface, dev);
 
     /* Read temperature once device is connected */
-    read_temperature(dev);
+    read_temperature(dev); // bulk in request
 
     return 0;
 }

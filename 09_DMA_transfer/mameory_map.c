@@ -6,7 +6,7 @@
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
 #include <linux/uaccess.h>
-
+//how many bytes sent at at time
 #define DRIVER_NAME "daq_driver"
 #define DEVICE_NAME "daq"
 #define DMA_BUF_SIZE (4 * 1024 * 1024)   /* 4 MB buffer */
@@ -40,7 +40,7 @@ static int daq_mmap(struct file *file, struct vm_area_struct *vma)
         return -EINVAL;
 
     vma->vm_flags |= VM_IO | VM_DONTEXPAND | VM_DONTDUMP;
-
+ //physical memory to userspace
     return remap_pfn_range(vma,
                            vma->vm_start,
                            dma_phys >> PAGE_SHIFT,
@@ -55,6 +55,13 @@ static struct file_operations daq_fops = {
     .mmap    = daq_mmap,
 };
 
+//major number , minor number for the character devide
+//initialize cdev structure -  character device struct ure
+//register them with kernel /sys/class
+//device class and node /sys/class/DEVICE_NAME_0
+//allocate memory buffer
+
+//we do have them internally - so we need them in the /sys/class area
 static int __init daq_init(void)
 {
     int ret;

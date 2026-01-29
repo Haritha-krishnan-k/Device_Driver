@@ -19,9 +19,10 @@ static struct kobject *temp_kobj; //sysfs kobject
 
 static int read_temperature(void)
 {
-    current_temp = 30 + (jiffies % 40);  /* 30°C – 69°C */
+    current_temp = 60 + (jiffies % 40);  // 60 -100
     return current_temp;
 }
+
 
 static ssize_t proc_read(struct file *file, char __user *buf,
                          size_t count, loff_t *ppos)
@@ -29,20 +30,27 @@ static ssize_t proc_read(struct file *file, char __user *buf,
     char buffer[128];
     int len;
 
-    read_temperature();
+    read_temperature(); // the function is called 
 
     len = snprintf(buffer, sizeof(buffer),
                    "Temperature: %d C\nThreshold: %d C\n",
-                   current_temp, threshold);
+                   current_temp, threshold); // the data is stored in the buffer
 
-    return simple_read_from_buffer(buf, count, ppos, buffer, len);
+    return simple_read_from_buffer(buf, count, ppos, buffer, len); // the data read from buffer to buf userspace and ppos represent the cursor movement
 }
 
 static const struct proc_ops proc_fops = {
     .proc_read = proc_read,
 };
 
+// read function for sysfs
+// parameters - kobject - the kernel obj rep - device/module in sysfs
+//         attr-the attribute u r reading
+//         buf-to write to in userspace
+// read_temp() - function called
+// snprintf -stored in buff as string and written the int value 
 
+// attr  - creates sysf
 static ssize_t temperature_show(struct kobject *kobj,
                                 struct kobj_attribute *attr,
                                 char *buf)
@@ -54,6 +62,9 @@ static ssize_t temperature_show(struct kobject *kobj,
 static struct kobj_attribute temperature_attr =
     __ATTR(temperature, 0444, temperature_show, NULL);
 
+// read and write function happens 
+// kstrtoint - converts the string in userspace to an int
+// updates the kernel variable
 
 static ssize_t threshold_show(struct kobject *kobj,
                               struct kobj_attribute *attr,
@@ -88,7 +99,7 @@ static int __init temp_driver_init(void)
     pr_info("%s: Initializing temperature driver\n", DRIVER_NAME);
 
     /* Procfs */
-    proc_entry = proc_create(PROC_NAME, 0444, NULL, &proc_fops);
+    proc_entry = proc_create(PROC_NAME, 0444, NULL, &proc_fops); // read operation
     if (!proc_entry)
         return -ENOMEM;
 
@@ -97,8 +108,8 @@ static int __init temp_driver_init(void)
     if (!temp_kobj)
         return -ENOMEM;
 
-    ret = sysfs_create_file(temp_kobj, &temperature_attr.attr);
-    ret |= sysfs_create_file(temp_kobj, &threshold_attr.attr);
+    ret = sysfs_create_file(temp_kobj, &temperature_attr.attr); //read only in sysfs
+    ret |= sysfs_create_file(temp_kobj, &threshold_attr.attr); //read and write in sysfs
     if (ret)
         pr_err("%s: Failed to create sysfs files\n", DRIVER_NAME);
 

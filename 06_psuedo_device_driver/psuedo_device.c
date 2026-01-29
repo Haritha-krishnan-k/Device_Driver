@@ -52,16 +52,16 @@ static ssize_t hrm_read(struct file *file, char __user *buf, size_t len, loff_t 
 
 // IOCTL handler
 static long hrm_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
-    int rate;
+    int rate; // this is passed from the user ioctl(fd,ioctl_Set_sampleing_rate,&rate)
     switch(cmd) {
         case IOCTL_SET_SAMPLING_RATE:
-            if (copy_from_user(&rate, (int __user *)arg, sizeof(rate)))
+            if (copy_from_user(&rate, (int __user *)arg, sizeof(rate))) //copy data from the user-space
                 return -EFAULT;
             if (rate <= 0 || rate > 100)
                 return -EINVAL;
 
             mutex_lock(&hrm_mutex);
-            sampling_rate = rate;
+            sampling_rate = rate; // only one function overwrites the value at a time
             mutex_unlock(&hrm_mutex);
 
             printk(KERN_INFO "vhrm: sampling rate set to %d Hz\n", rate);

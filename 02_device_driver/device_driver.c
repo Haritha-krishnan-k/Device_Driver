@@ -22,24 +22,24 @@ static struct vblock_dev vblock;
 
 static void vblock_request(struct request_queue *q)
 {
-    struct request *req;
+    struct request *req; // request block
 
     while ((req = blk_fetch_request(q)) != NULL) {
-        struct bio_vec bv;
-        struct req_iterator iter;
-        sector_t sector = blk_rq_pos(req);
+        struct bio_vec bv; //memory segment 
+        struct req_iterator iter; // iteration
+        sector_t sector = blk_rq_pos(req); // sector number 
 
-        rq_for_each_segment(bv, req, iter) {
-            unsigned long offset = sector * SECTOR_SIZE;
-            char *buffer = kmap(bv.bv_page) + bv.bv_offset;
+        rq_for_each_segment(bv, req, iter) { // for each sector
+            unsigned long offset = sector * SECTOR_SIZE; // the sector is conveted into byte index
+            char *buffer = kmap(bv.bv_page) + bv.bv_offset; // buffer is the place where the kernel buffer is converted into virtual memory and buffer is the pointer
 
-            if (offset + bv.bv_len > vblock.size) {
+            if (offset + bv.bv_len > vblock.size) { 
                 kunmap(bv.bv_page);
                 __blk_end_request_all(req, -EIO);
                 break;
             }
 
-            if (rq_data_dir(req) == WRITE)
+            if (rq_data_dir(req) == WRITE) // checks if it is read /write
                 memcpy(vblock.data + offset, buffer, bv.bv_len);
             else
                 memcpy(buffer, vblock.data + offset, bv.bv_len);
@@ -54,20 +54,20 @@ static void vblock_request(struct request_queue *q)
 
 static int vblock_create(struct vblock_dev *dev)
 {
-    dev->size = NSECTORS * SECTOR_SIZE;
+    dev->size = NSECTORS * SECTOR_SIZE; // the size
 
-    dev->data = vmalloc(dev->size);
+    dev->data = vmalloc(dev->size); // the data space
     if (!dev->data)
         return -ENOMEM;
 
-    memset(dev->data, 0, dev->size);
+    memset(dev->data, 0, dev->size); // both place are conveted to 0 byte area or cleaned
 
-    if (register_blkdev(VBLK_MAJOR, DEVICE_NAME)) {
+    if (register_blkdev(VBLK_MAJOR, DEVICE_NAME)) { // check if already registered
         vfree(dev->data);
         return -EBUSY;
     }
 
-    dev->queue = blk_init_queue(vblock_request, NULL);
+    dev->queue = blk_init_queue(vblock_request, NULL); // allocate queue
     if (!dev->queue) {
         unregister_blkdev(VBLK_MAJOR, DEVICE_NAME);
         vfree(dev->data);

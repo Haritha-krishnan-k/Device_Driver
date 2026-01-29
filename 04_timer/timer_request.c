@@ -22,7 +22,7 @@ static int __init timer_driver_init(void)
 
     printk(KERN_INFO "[%s] Initializing timer driver\n", DRIVER_NAME);
 
-    ret = request_irq(TIMER_IRQ, timer_isr, IRQF_SHARED, DRIVER_NAME, (void *)timer_driver_init);
+    ret = request_irq(TIMER_IRQ, timer_isr, IRQF_SHARED, DRIVER_NAME, (void *)timer_driver_init);  // this is the number of the int req , the funciton , the flag to check if it is shared or not , driver name and the pointer to identify device
     if (ret) {
         printk(KERN_ERR "[%s] Failed to register IRQ %d\n", DRIVER_NAME, TIMER_IRQ);
         return ret;

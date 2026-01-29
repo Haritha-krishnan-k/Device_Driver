@@ -23,20 +23,20 @@ static struct vdisk_dev vdisk;
 
 // Request handler
 static void vdisk_request(struct request_queue *q) {
-    struct request *req;
+    struct request *req; // one blocl input / output req 
     while ((req = blk_fetch_request(q)) != NULL) {
-        sector_t sector = blk_rq_pos(req);
-        unsigned int sectors = blk_rq_sectors(req);
-        struct bio_vec bv;
-        struct req_iterator iter;
+        sector_t sector = blk_rq_pos(req); // the sector size
+        unsigned int sectors = blk_rq_sectors(req); // the sector 
+        struct bio_vec bv; // this is the memory segment 
+        struct req_iterator iter; // iteration
 
-        rq_for_each_segment(bv, req, iter) {
-            char *buffer = kmap(bv.bv_page) + bv.bv_offset;
+        rq_for_each_segment(bv, req, iter) { //ever sector the memory segment , request block all taken with them
+            char *buffer = kmap(bv.bv_page) + bv.bv_offset; // maps the physical memory to the virtual memoty and buffer is the pointer to that memory
 
-            if (rq_data_dir(req) == WRITE) {
-                memcpy(vdisk.data + sector*SECTOR_SIZE, buffer, sectors*SECTOR_SIZE);
+            if (rq_data_dir(req) == WRITE) { // req_data_dir - tells the direction
+                memcpy(vdisk.data + sector*SECTOR_SIZE, buffer, sectors*SECTOR_SIZE); //kernel buffer to virtual disk
             } else {
-                memcpy(buffer, vdisk.data + sector*SECTOR_SIZE, sectors*SECTOR_SIZE);
+                memcpy(buffer, vdisk.data + sector*SECTOR_SIZE, sectors*SECTOR_SIZE); // virtual disk to kernel buffer 
             }
 
             kunmap(bv.bv_page);

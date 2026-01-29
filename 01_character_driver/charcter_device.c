@@ -21,7 +21,7 @@ static int vsensor_release(struct inode *inode, struct file *file) {
 }
 
 static ssize_t vsensor_read(struct file *file, char __user *buf, size_t len, loff_t *offset) {
-    int sensor_value = 42; // example sensor value
+    int sensor_value = 42; 
     if (len < sizeof(int))
         return -EINVAL;
 
