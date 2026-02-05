@@ -1,0 +1,1 @@
+cmd_/home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.mod := { echo  /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.o;  echo; } > /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.mod

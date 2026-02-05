@@ -1,0 +1,1 @@
+cmd_/home/haritha/Documents/Device_Driver/practice/01_pci_discovery/Module.symvers := sed 's/\.ko$$/\.o/' /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/modules.order | scripts/mod/modpost -m -a  -o /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/Module.symvers -e -i Module.symvers   -T -

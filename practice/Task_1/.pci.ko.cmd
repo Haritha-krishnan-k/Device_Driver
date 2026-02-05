@@ -1,0 +1,1 @@
+cmd_/home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.ko := ld -r  -m elf_x86_64 -z noexecstack   --build-id=sha1  -T scripts/module.lds -o /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.ko /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.o /home/haritha/Documents/Device_Driver/practice/01_pci_discovery/pci.mod.o;  true

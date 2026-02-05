@@ -81,15 +81,15 @@ static int dma_probe(struct pci_dev *pdev,
 
     ret = pci_enable_device(pdev);
     if (ret)
-        goto err_free;
+        kfree(dma_dev);
 
     ret = pci_request_regions(pdev, DRIVER_NAME);
     if (ret)
-        goto err_disable;
+        pci_disable_device(pdev);
 
     dma_dev->mmio = pci_iomap(pdev, 0, 0);
     if (!dma_dev->mmio)
-        goto err_regions;
+        pci_release_regions(pdev);
 
     /* Allocate DMA buffer */
     dma_dev->dma_virt = dma_alloc_coherent(&pdev->dev,
@@ -97,7 +97,7 @@ static int dma_probe(struct pci_dev *pdev,
                                            &dma_dev->dma_phys,
                                            GFP_KERNEL);
     if (!dma_dev->dma_virt)
-        goto err_iounmap;
+            pci_iounmap(pdev, dma_dev->mmio);
 
     /* Request interrupt */
     dma_dev->irq = pdev->irq;
@@ -107,7 +107,8 @@ static int dma_probe(struct pci_dev *pdev,
                       DRIVER_NAME,
                       dma_dev);
     if (ret)
-        goto err_dma;
+           dma_free_coherent(&pdev->dev, DMA_BUF_SIZE,
+                      dma_dev->dma_virt, dma_dev->dma_phys);
 
     /* Character device */
     alloc_chrdev_region(&dma_dev->devt, 0, 1, DEVICE_NAME);
@@ -120,18 +121,6 @@ static int dma_probe(struct pci_dev *pdev,
     pr_info("[%s] PCIe DMA device initialized\n", DRIVER_NAME);
     return 0;
 
-err_dma:
-    dma_free_coherent(&pdev->dev, DMA_BUF_SIZE,
-                      dma_dev->dma_virt, dma_dev->dma_phys);
-err_iounmap:
-    pci_iounmap(pdev, dma_dev->mmio);
-err_regions:
-    pci_release_regions(pdev);
-err_disable:
-    pci_disable_device(pdev);
-err_free:
-    kfree(dma_dev);
-    return ret;
 }
 
 
