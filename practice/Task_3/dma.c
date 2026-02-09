@@ -10,10 +10,7 @@
 
 #define DMA_BUF_SIZE (4 * 1024 * 1024)   /* 4MB */
 
-/* -------------------------------------------------- */
-/* Per-device private structure */
-/* -------------------------------------------------- */
-//one software object for one pci device
+
 struct pci_dma_dev {
     struct pci_dev *pdev;  //which pci device am I controlling
 
